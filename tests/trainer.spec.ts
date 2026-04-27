@@ -110,6 +110,63 @@ test.describe('KA3Eck Dreieck-6 Trainer', () => {
     expect(parseTotal(counterText)).toBe(24);
   });
 
+  test('G — Buttons überlappen nicht mit Antworttext (alle 24 Karten, Desktop+Mobile)', async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on('pageerror', (err) => consoleErrors.push(`pageerror: ${err.message}`));
+    page.on('console', (msg) => {
+      if (msg.type() === 'error' && !msg.text().includes('Failed to load')) {
+        consoleErrors.push(msg.text());
+      }
+    });
+
+    await gotoIndex(page);
+    await page.locator('.category-tab[data-category="all"]').click();
+
+    const counterText = (await page.locator('#cardCounter').textContent()) ?? '';
+    const total = parseTotal(counterText);
+
+    for (let i = 0; i < total; i++) {
+      // Aufdecken
+      const klass = await page.locator('#flashcard').getAttribute('class');
+      await page.locator('#flipBtn').click();
+      await expect(
+        page.locator('#flashcard'),
+        `Karte ${i + 1}/${total}: flip schlug fehl. Klasse vorher: "${klass}". Console-Errors: ${consoleErrors.join(' | ')}`,
+      ).toHaveClass(/flipped/);
+
+      // Bounding-Boxes der Antwort und der Buttons holen
+      const back = await page.locator('.card-back').boundingBox();
+      const controls = await page.locator('.controls').boundingBox();
+      const rating = await page.locator('#ratingButtons').boundingBox();
+
+      if (!back || !controls) {
+        throw new Error(`Karte ${i + 1}: Bounding-Box fehlt (back=${!!back}, controls=${!!controls})`);
+      }
+
+      // Controls müssen UNTERHALB der Antwort beginnen — kein Überlappen
+      expect(
+        controls.y,
+        `Karte ${i + 1}: .controls (y=${controls.y}) startet vor Ende der .card-back (y+h=${back.y + back.height})`,
+      ).toBeGreaterThanOrEqual(back.y + back.height);
+
+      if (rating) {
+        expect(
+          rating.y,
+          `Karte ${i + 1}: .rating-buttons (y=${rating.y}) überlappt .card-back (y+h=${back.y + back.height})`,
+        ).toBeGreaterThanOrEqual(back.y + back.height);
+      }
+
+      // Weiter zur nächsten Karte (außer bei der letzten).
+      // nextCard() hat ein 400ms isNavigating-Debounce, das einen schnellen
+      // Klick verschluckt. 450ms warten, bis das Debounce-Fenster zu ist.
+      if (i < total - 1) {
+        await page.waitForTimeout(450);
+        await page.locator('#nextBtn').click();
+        await expect(page.locator('#cardCounter')).toContainText(`Karte ${i + 2} von`);
+      }
+    }
+  });
+
   test('F — Keine Console-Errors beim Durchklicken', async ({ page }) => {
     const errors: string[] = [];
     page.on('console', (msg) => {

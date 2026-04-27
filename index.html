@@ -136,8 +136,6 @@
             background: linear-gradient(145deg, #f0fdf4, #dcfce7);
             transform: rotateY(180deg);
             height: auto;
-            max-height: calc(100vh - 350px);
-            overflow-y: auto;
         }
 
         .card-category {
@@ -449,10 +447,6 @@
 
             .rating-buttons {
                 flex-wrap: wrap;
-            }
-
-            .card-back {
-                max-height: 70vh;
             }
         }
     </style>
@@ -1055,7 +1049,13 @@
             document.getElementById('cardCategoryBack').textContent = card.category.toUpperCase();
 
             // Reset card flip
-            document.getElementById('flashcard').classList.remove('flipped');
+            const flashcard = document.getElementById('flashcard');
+            flashcard.classList.remove('flipped');
+            flashcard.style.minHeight = '';
+            if (backResizeObserver) {
+                backResizeObserver.disconnect();
+                backResizeObserver = null;
+            }
             document.getElementById('flipBtn').textContent = 'Aufdecken';
             document.getElementById('ratingButtons').classList.remove('visible');
 
@@ -1064,18 +1064,42 @@
             renderMath();
         }
 
+        // ResizeObserver hält die Kartenhöhe synchron mit dem Antwortinhalt,
+        // auch wenn KaTeX-Webfonts erst nach dem Flip nachladen und die
+        // Antwort dadurch wächst. Ohne das ragt der Antworttext unter die
+        // Buttons (controls/rating-buttons) — siehe Regressionstest G.
+        let backResizeObserver = null;
+
+        function syncCardHeightToBack() {
+            const card = document.getElementById('flashcard');
+            if (!card.classList.contains('flipped')) return;
+            const back = card.querySelector('.card-back');
+            // ceil, damit Subpixel-Rundung nicht 0.x px Überlappung erzeugt
+            card.style.minHeight = Math.ceil(back.getBoundingClientRect().height) + 'px';
+        }
+
         // Flip card
         function flipCard() {
             const card = document.getElementById('flashcard');
             const btn = document.getElementById('flipBtn');
             const rating = document.getElementById('ratingButtons');
+            const back = card.querySelector('.card-back');
 
             card.classList.toggle('flipped');
 
             if (card.classList.contains('flipped')) {
+                syncCardHeightToBack();
+                if (backResizeObserver) backResizeObserver.disconnect();
+                backResizeObserver = new ResizeObserver(syncCardHeightToBack);
+                backResizeObserver.observe(back);
                 btn.textContent = 'Zurück zur Frage';
                 rating.classList.add('visible');
             } else {
+                if (backResizeObserver) {
+                    backResizeObserver.disconnect();
+                    backResizeObserver = null;
+                }
+                card.style.minHeight = '';
                 btn.textContent = 'Aufdecken';
                 rating.classList.remove('visible');
             }
