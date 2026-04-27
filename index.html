@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KA3Eck — Dreiecke & Winkel · Klasse 6</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .category-tab {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .category-tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .category-tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            height: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            min-height: 350px;
+            height: auto;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            width: 100%;
+            min-height: 350px;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-front {
+            position: relative;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+        }
+
+        .card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+            transform: rotateY(180deg);
+            height: auto;
+            max-height: calc(100vh - 350px);
+            overflow-y: auto;
+        }
+
+        .card-category {
+            font-size: 0.8rem;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .card-question {
+            font-size: 1.4rem;
+            color: #1f2937;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .card-answer {
+            flex-grow: 1;
+        }
+
+        .card-answer h4 {
+            color: #166534;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .card-answer ol, .card-answer ul {
+            margin-left: 20px;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .card-answer p {
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .formula-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        details.example {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        details.example summary {
+            padding: 12px 15px;
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 600;
+            list-style: none;
+            transition: background 0.2s;
+        }
+
+        details.example summary:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        details.example summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details.example summary::before {
+            content: "▶ ";
+            font-size: 0.8rem;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        details.example[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .example-content {
+            padding: 0 15px 15px 15px;
+            color: #4b5563;
+            line-height: 1.8;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-flip {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-flip:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-nav {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-nav:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-known {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-known:hover {
+            background: #16a34a;
+        }
+
+        .btn-again {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-again:hover {
+            background: #dc2626;
+        }
+
+        .btn-hard {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-hard:hover {
+            background: #ea580c;
+        }
+
+        .btn-good {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-good:hover {
+            background: #16a34a;
+        }
+
+        .btn-easy {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-easy:hover {
+            background: #2563eb;
+        }
+
+        .rating-buttons {
+            display: none;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .rating-buttons.visible {
+            display: flex;
+        }
+
+        .rating-buttons .btn {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+        }
+
+        .next-review {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        .card-counter {
+            text-align: center;
+            color: white;
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            color: white;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .shuffle-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .shuffle-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .reset-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-question {
+                font-size: 1.2rem;
+            }
+
+            .card-front, .card-back {
+                padding: 20px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
+
+            .category-tab {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+                min-height: 44px;
+            }
+
+            .controls {
+                gap: 8px;
+            }
+
+            .rating-buttons {
+                flex-wrap: wrap;
+            }
+
+            .card-back {
+                max-height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>KA3Eck — Dreiecke & Winkel</h1>
+            <p>Klasse 6 · Vorbereitung Klassenarbeit Mai 2026</p>
+        </header>
+
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">Alle</button>
+            <button class="category-tab" data-category="winkelmessen">1 · Winkel</button>
+            <button class="category-tab" data-category="winkelpaare">2 · Winkelpaare</button>
+            <button class="category-tab" data-category="dreiecksarten">3 · Arten</button>
+            <button class="category-tab" data-category="konstruieren">4 · Konstruieren</button>
+            <button class="category-tab" data-category="konstruierbarkeit">5 · Konstruierbar?</button>
+            <button class="category-tab" data-category="kongruenz">6 · Kongruenz</button>
+            <button class="category-tab" data-category="mittelsenkrechte">7 · Mittelsenkr./Umkreis</button>
+            <button class="category-tab" data-category="winkelhalbierende">8 · Winkelhalb./Inkreis</button>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="shuffle-btn" onclick="shuffleCards()">🔀 Mischen</button>
+            <button class="reset-btn" onclick="resetProgress()">Fortschritt zurücksetzen</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill">0%</div>
+        </div>
+
+        <div class="card-container">
+            <div class="card" id="flashcard">
+                <div class="card-front">
+                    <div class="card-category" id="cardCategory"></div>
+                    <div class="card-question" id="cardQuestion"></div>
+                </div>
+                <div class="card-back">
+                    <div class="card-category" id="cardCategoryBack"></div>
+                    <div class="card-answer" id="cardAnswer"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-nav" id="prevBtn" onclick="prevCard()">← Zurück</button>
+            <button class="btn btn-flip" id="flipBtn" onclick="flipCard()">Aufdecken</button>
+            <button class="btn btn-nav" id="nextBtn" onclick="nextCard()">Weiter →</button>
+        </div>
+
+        <div class="rating-buttons" id="ratingButtons">
+            <button class="btn btn-again" onclick="rateCard(1)">Nochmal</button>
+            <button class="btn btn-hard" onclick="rateCard(3)">Schwer</button>
+            <button class="btn btn-good" onclick="rateCard(4)">Gut</button>
+            <button class="btn btn-easy" onclick="rateCard(5)">Leicht</button>
+        </div>
+        <div class="next-review" id="nextReview"></div>
+
+        <div class="card-counter" id="cardCounter"></div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="knownCount">0</div>
+                <div class="stat-label">Gewusst</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="unknownCount">0</div>
+                <div class="stat-label">Üben</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="remainingCount">0</div>
+                <div class="stat-label">Offen</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const cards = [
+            // ===== Tab 1: Winkel messen, zeichnen, Winkelarten =====
+            {
+                id: 1,
+                category: "winkelmessen",
+                question: "Wie misst du einen Winkel mit dem Geodreieck?",
+                answer: `
+                    <h4>Winkel messen</h4>
+                    <ol>
+                        <li>Lege den Mittelpunkt M des Geodreiecks auf den Scheitelpunkt des Winkels.</li>
+                        <li>Lege die Nulllinie des Geodreiecks auf einen der beiden Schenkel.</li>
+                        <li>Lies an der Skala den Wert am zweiten Schenkel ab.</li>
+                    </ol>
+                    <p><strong>Tipp:</strong> Achte auf die richtige Skala (innen oder außen) — die zählt von 0° beim ersten Schenkel.</p>
+                    <details class="example">
+                        <summary>Beispiel anzeigen</summary>
+                        <div class="example-content">
+                            Erster Schenkel auf 0° der inneren Skala → zweiter Schenkel zeigt auf 65° → der Winkel ist <strong>65°</strong>.
+                        </div>
+                    </details>
+                `
+            },
+            {
+                id: 2,
+                category: "winkelmessen",
+                question: "Wie zeichnest du einen Winkel von 50° mit Scheitel S?",
+                answer: `
+                    <h4>Winkel zeichnen</h4>
+                    <ol>
+                        <li>Zeichne von S aus einen Schenkel.</li>
+                        <li>Lege den Mittelpunkt M des Geodreiecks auf S, Nulllinie auf den Schenkel.</li>
+                        <li>Markiere bei 50° auf der Skala einen Punkt P.</li>
+                        <li>Verbinde S mit P → zweiter Schenkel.</li>
+                    </ol>
+                    <p><strong>Bezeichnung:</strong> Winkel werden mit griechischen Buchstaben (α, β, γ) oder als ∢ASP geschrieben.</p>
+                `
+            },
+            {
+                id: 3,
+                category: "winkelmessen",
+                question: "Welche fünf Winkelarten gibt es?",
+                answer: `
+                    <h4>Winkelarten</h4>
+                    <div class="formula-box">
+                        spitzer Winkel: 0° &lt; α &lt; 90°<br>
+                        rechter Winkel: α = 90°<br>
+                        stumpfer Winkel: 90° &lt; α &lt; 180°<br>
+                        gestreckter Winkel: α = 180°<br>
+                        überstumpfer Winkel: 180° &lt; α &lt; 360°
+                    </div>
+                    <p><strong>Sonderfälle:</strong> Vollwinkel = 360°, Nullwinkel = 0°.</p>
+                `
+            },
+
+            // ===== Tab 2: Winkelpaare =====
+            {
+                id: 4,
+                category: "winkelpaare",
+                question: "Was sagt der Scheitelwinkelsatz?",
+                answer: `
+                    <h4>Scheitelwinkelsatz</h4>
+                    <p>Wenn sich zwei Geraden schneiden, sind die einander <strong>gegenüberliegenden</strong> Winkel gleich groß.</p>
+                    <div class="formula-box">α = α' &nbsp;&nbsp; (Scheitelwinkel sind gleich groß)</div>
+                    <p>An einer Geraden-Kreuzung entstehen 4 Winkel — die diagonal gegenüberliegenden Paare sind Scheitelwinkel.</p>
+                    <details class="example">
+                        <summary>Beispiel anzeigen</summary>
+                        <div class="example-content">
+                            Ein Winkel beträgt α = 65° → der gegenüberliegende Scheitelwinkel ist ebenfalls α' = <strong>65°</strong>.
+                        </div>
+                    </details>
+                `
+            },
+            {
+                id: 5,
+                category: "winkelpaare",
+                question: "Was sagt der Nebenwinkelsatz?",
+                answer: `
+                    <h4>Nebenwinkelsatz</h4>
+                    <p>Zwei Winkel, die zusammen einen <strong>gestreckten Winkel</strong> bilden, ergänzen sich zu 180°.</p>
+                    <div class="formula-box">α + β = 180° &nbsp;&nbsp; (Nebenwinkel)</div>
+                    <details class="example">
+                        <summary>Beispiel anzeigen</summary>
+                        <div class="example-content">
+                            α = 65° → Nebenwinkel β = 180° − 65° = <strong>115°</strong>.
+                        </div>
+                    </details>
+                `
+            },
+            {
+                id: 6,
+                category: "winkelpaare",
+                question: "Was sagt der Stufenwinkelsatz?",
+                answer: `
+                    <h4>Stufenwinkelsatz</h4>
+                    <p>An zwei <strong>parallelen Geraden</strong>, die von einer dritten Geraden geschnitten werden, sind <strong>Stufenwinkel</strong> gleich groß.</p>
+                    <p><strong>Merkfigur:</strong> F-Figur (gleichliegende Winkel auf gleicher Seite der schneidenden Geraden).</p>
+                    <div class="formula-box">g ∥ h &nbsp; ⇒ &nbsp; α = α' &nbsp;&nbsp; (Stufenwinkel)</div>
+                    <details class="example">
+                        <summary>Beispiel anzeigen</summary>
+                        <div class="example-content">
+                            g ∥ h, α = 50° → der Stufenwinkel auf h ist α' = <strong>50°</strong>.
+                        </div>
+                    </details>
+                `
+            },
+            {
+                id: 7,
+                category: "winkelpaare",
+                question: "Was sagt der Wechselwinkelsatz?",
+                answer: `
+                    <h4>Wechselwinkelsatz</h4>
+                    <p>An zwei <strong>parallelen Geraden</strong> sind <strong>Wechselwinkel</strong> (über Kreuz) gleich groß.</p>
+                    <p><strong>Merkfigur:</strong> Z-Figur.</p>
+                    <div class="formula-box">g ∥ h &nbsp; ⇒ &nbsp; α = α' &nbsp;&nbsp; (Wechselwinkel)</div>
+                    <details class="example">
+                        <summary>Beispiel anzeigen</summary>
+                        <div class="example-content">
+                            g ∥ h, α = 50° → der Wechselwinkel ist α' = <strong>50°</strong>.
+                        </div>
+                    </details>
+                `
+            },
+
+            // ===== Tab 3: Dreiecksarten =====
+            {
+                id: 8,
+                category: "dreiecksarten",
+                question: "Wie unterscheidet man Dreiecke nach den Seiten?",
+                answer: `
+                    <h4>Dreiecksarten — nach Seiten</h4>
+                    <ul>
+                        <li><strong>gleichseitig:</strong> alle drei Seiten gleich lang (a = b = c) — alle Innenwinkel sind 60°</li>
+                        <li><strong>gleichschenklig:</strong> zwei Seiten gleich lang (Schenkel) — die Basiswinkel sind gleich groß</li>
+                        <li><strong>allgemein (ungleichseitig):</strong> alle Seiten verschieden lang</li>
+                    </ul>
+                `
+            },
+            {
+                id: 9,
+                category: "dreiecksarten",
+                question: "Wie unterscheidet man Dreiecke nach den Winkeln?",
+                answer: `
+                    <h4>Dreiecksarten — nach Winkeln</h4>
+                    <ul>
+                        <li><strong>spitzwinklig:</strong> alle drei Winkel sind kleiner als 90°</li>
+                        <li><strong>rechtwinklig:</strong> ein Winkel ist genau 90° (die anderen beiden ergeben zusammen 90°)</li>
+                        <li><strong>stumpfwinklig:</strong> ein Winkel ist größer als 90°</li>
+                    </ul>
+                    <p><strong>Hinweis:</strong> Mehr als ein rechter oder stumpfer Winkel ist nicht möglich — sonst wäre die Innenwinkelsumme &gt; 180°.</p>
+                `
+            },
+            {
+                id: 10,
+                category: "dreiecksarten",
+                question: "Welche Kombinationen aus Seiten- und Winkelart sind möglich?",
+                answer: `
+                    <h4>Kombinationen</h4>
+                    <ul>
+                        <li><strong>gleichseitig</strong> → immer spitzwinklig (alle Winkel 60°)</li>
+                        <li><strong>gleichschenklig</strong> → kann spitz-, recht- oder stumpfwinklig sein</li>
+                        <li><strong>allgemein</strong> → jede Winkelart möglich</li>
+                    </ul>
+                    <p><strong>Merksatz:</strong> Ein gleichseitiges Dreieck ist niemals rechtwinklig oder stumpfwinklig.</p>
+                `
+            },
+
+            // ===== Tab 4: Konstruieren (SSS, SWS, WSW) =====
+            {
+                id: 11,
+                category: "konstruieren",
+                question: "Wie konstruierst du ein Dreieck nach SSS (gegeben: a, b, c)?",
+                answer: `
+                    <h4>SSS-Konstruktion</h4>
+                    <p><strong>Beispiel:</strong> a = 5 cm, b = 4 cm, c = 6 cm</p>
+                    <p><strong>1. Planfigur</strong> (Skizze ohne Maße): Dreieck ABC, Seite AB unten.</p>
+                    <p><strong>2. Konstruktionsbeschreibung:</strong></p>
+                    <ol>
+                        <li>Zeichne Strecke c = AB mit Länge 6 cm.</li>
+                        <li>Schlage einen Kreis um A mit Radius b = 4 cm.</li>
+                        <li>Schlage einen Kreis um B mit Radius a = 5 cm.</li>
+                        <li>Die beiden Kreise schneiden sich in C (und C').</li>
+                        <li>Verbinde A mit C und B mit C → Dreieck ABC.</li>
+                    </ol>
+                    <p><strong>Hinweis:</strong> Vorher Dreiecksungleichung prüfen — sonst keine Schnittpunkte!</p>
+                `
+            },
+            {
+                id: 12,
+                category: "konstruieren",
+                question: "Wie konstruierst du ein Dreieck nach SWS (gegeben: a, β, c)?",
+                answer: `
+                    <h4>SWS-Konstruktion</h4>
+                    <p><strong>Wichtig:</strong> Der Winkel β liegt <strong>zwischen</strong> den beiden gegebenen Seiten a und c.</p>
+                    <p><strong>Beispiel:</strong> a = 4 cm, β = 60°, c = 6 cm</p>
+                    <p><strong>Konstruktionsbeschreibung:</strong></p>
+                    <ol>
+                        <li>Zeichne Strecke c = AB mit Länge 6 cm.</li>
+                        <li>Trage in B den Winkel β = 60° an AB an.</li>
+                        <li>Trage auf dem freien Schenkel von B aus die Länge a = 4 cm ab → Punkt C.</li>
+                        <li>Verbinde A mit C → Dreieck ABC.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 13,
+                category: "konstruieren",
+                question: "Wie konstruierst du ein Dreieck nach WSW (gegeben: α, c, β)?",
+                answer: `
+                    <h4>WSW-Konstruktion</h4>
+                    <p><strong>Wichtig:</strong> α und β liegen <strong>an den Endpunkten</strong> der gegebenen Seite c.</p>
+                    <p><strong>Beispiel:</strong> α = 50°, c = 6 cm, β = 70°</p>
+                    <p><strong>Konstruktionsbeschreibung:</strong></p>
+                    <ol>
+                        <li>Zeichne Strecke c = AB mit Länge 6 cm.</li>
+                        <li>Trage in A den Winkel α = 50° an AB an.</li>
+                        <li>Trage in B den Winkel β = 70° an AB an.</li>
+                        <li>Die freien Schenkel schneiden sich in C → Dreieck ABC.</li>
+                    </ol>
+                    <p><strong>Hinweis:</strong> Konstruktion gelingt nur, wenn α + β &lt; 180° (sonst kein Schnittpunkt).</p>
+                `
+            },
+
+            // ===== Tab 5: Konstruierbarkeit =====
+            {
+                id: 14,
+                category: "konstruierbarkeit",
+                question: "Wann ist ein Dreieck mit gegebenen Seiten überhaupt konstruierbar?",
+                answer: `
+                    <h4>Dreiecksungleichung</h4>
+                    <p>Jede Seite muss <strong>kürzer</strong> sein als die Summe der beiden anderen.</p>
+                    <div class="formula-box">a + b &gt; c &nbsp;&nbsp; und &nbsp;&nbsp; a + c &gt; b &nbsp;&nbsp; und &nbsp;&nbsp; b + c &gt; a</div>
+                    <details class="example">
+                        <summary>Beispiel anzeigen</summary>
+                        <div class="example-content">
+                            <strong>a = 3 cm, b = 4 cm, c = 8 cm:</strong> 3 + 4 = 7 &lt; 8 → <strong>nicht konstruierbar</strong>.<br><br>
+                            <strong>a = 3 cm, b = 4 cm, c = 6 cm:</strong> 3 + 4 = 7 &gt; 6 ✓, 3 + 6 = 9 &gt; 4 ✓, 4 + 6 = 10 &gt; 3 ✓ → <strong>konstruierbar</strong>.
+                        </div>
+                    </details>
+                `
+            },
+            {
+                id: 15,
+                category: "konstruierbarkeit",
+                question: "Wie groß ist die Summe der Innenwinkel im Dreieck?",
+                answer: `
+                    <h4>Innenwinkelsatz</h4>
+                    <div class="formula-box">α + β + γ = 180°</div>
+                    <p><strong>Folgerung:</strong> Sind zwei Winkel bekannt, ergibt sich der dritte aus 180° minus die Summe der beiden anderen.</p>
+                    <details class="example">
+                        <summary>Beispiel anzeigen</summary>
+                        <div class="example-content">
+                            α = 70°, β = 60° → γ = 180° − 70° − 60° = <strong>50°</strong>.
+                        </div>
+                    </details>
+                    <p><strong>Sonderfall:</strong> Wenn α + β ≥ 180° → kein Dreieck konstruierbar.</p>
+                `
+            },
+            {
+                id: 16,
+                category: "konstruierbarkeit",
+                question: "Welche drei Angaben reichen aus, um ein Dreieck eindeutig zu konstruieren?",
+                answer: `
+                    <h4>Welcher Kongruenzsatz passt?</h4>
+                    <ul>
+                        <li><strong>SSS</strong> — drei Seiten</li>
+                        <li><strong>SWS</strong> — zwei Seiten + Winkel <strong>dazwischen</strong></li>
+                        <li><strong>WSW</strong> (auch SWW) — zwei Winkel + eine Seite</li>
+                        <li><strong>SsW</strong> — zwei Seiten + Winkel gegenüber der <strong>größeren</strong> Seite</li>
+                    </ul>
+                    <p><strong>Faustregel:</strong> Drei voneinander unabhängige Stücke, mindestens <strong>eine Seite</strong>.</p>
+                    <p><strong>Nicht eindeutig:</strong> drei Winkel allein (legen nur die Form fest, nicht die Größe).</p>
+                `
+            },
+
+            // ===== Tab 6: Kongruenz =====
+            {
+                id: 17,
+                category: "kongruenz",
+                question: "Wann sind zwei Dreiecke kongruent?",
+                answer: `
+                    <h4>Kongruenz von Dreiecken</h4>
+                    <p>Zwei Dreiecke sind <strong>kongruent (≅)</strong>, wenn sie durch <strong>Verschieben, Drehen oder Spiegeln</strong> zur Deckung gebracht werden können.</p>
+                    <p><strong>Vier Kongruenzsätze:</strong></p>
+                    <ul>
+                        <li><strong>SSS:</strong> alle drei Seiten gleich lang</li>
+                        <li><strong>SWS:</strong> zwei Seiten + eingeschlossener Winkel gleich</li>
+                        <li><strong>WSW:</strong> zwei Winkel + dazwischenliegende Seite gleich</li>
+                        <li><strong>SsW:</strong> zwei Seiten + Winkel gegenüber der <strong>größeren</strong> Seite gleich</li>
+                    </ul>
+                    <div class="formula-box">Schreibweise: △ABC ≅ △DEF</div>
+                `
+            },
+            {
+                id: 18,
+                category: "kongruenz",
+                question: "Sind diese Dreiecke kongruent? △ABC mit a = 5 cm, b = 4 cm, γ = 60°. △DEF mit d = 5 cm, e = 4 cm, ∢DFE = 60°.",
+                answer: `
+                    <h4>Lösung</h4>
+                    <p><strong>1. Welche Stücke sind gegeben?</strong></p>
+                    <p>In beiden Dreiecken: zwei Seiten (a, b bzw. d, e) und der Winkel <strong>zwischen</strong> ihnen (γ bzw. ∢DFE liegt zwischen Seiten d und e).</p>
+                    <p><strong>2. Welcher Kongruenzsatz passt?</strong></p>
+                    <p>→ <strong>SWS</strong> (zwei Seiten + eingeschlossener Winkel)</p>
+                    <p><strong>3. Ergebnis:</strong></p>
+                    <div class="formula-box">△ABC ≅ △DEF</div>
+                    <p><strong>Tipp für die KA:</strong> Erst die gegebenen Stücke notieren, dann passenden Kongruenzsatz auswählen, dann Aussage formulieren.</p>
+                `
+            },
+
+            // ===== Tab 7: Mittelsenkrechte + Umkreis =====
+            {
+                id: 19,
+                category: "mittelsenkrechte",
+                question: "Wie konstruierst du die Mittelsenkrechte der Strecke AB?",
+                answer: `
+                    <h4>Mittelsenkrechte konstruieren</h4>
+                    <p><strong>Konstruktionsbeschreibung:</strong></p>
+                    <ol>
+                        <li>Schlage einen Kreis um A mit Radius r &gt; AB/2.</li>
+                        <li>Schlage einen Kreis um B mit demselben Radius r.</li>
+                        <li>Die beiden Kreise schneiden sich in zwei Punkten P und Q.</li>
+                        <li>Zeichne die Gerade durch P und Q → Mittelsenkrechte von AB.</li>
+                    </ol>
+                    <p><strong>Eigenschaft:</strong> Die Mittelsenkrechte schneidet AB im Mittelpunkt M senkrecht (90°).</p>
+                `
+            },
+            {
+                id: 20,
+                category: "mittelsenkrechte",
+                question: "Welche besondere Eigenschaft hat die Mittelsenkrechte?",
+                answer: `
+                    <h4>Mittelsenkrechte als Ortslinie</h4>
+                    <p><strong>Ortslinien-Eigenschaft:</strong> Jeder Punkt P auf der Mittelsenkrechten von AB hat den <strong>gleichen Abstand</strong> zu A und zu B.</p>
+                    <div class="formula-box">|PA| = |PB|  &nbsp;&nbsp; für alle P auf der Mittelsenkrechten</div>
+                    <p><strong>Folgerung:</strong> Die Mittelsenkrechte ist die Ortslinie aller Punkte, die von A und B gleich weit entfernt sind.</p>
+                    <p><strong>Wozu nützlich?</strong> Wenn man einen Punkt sucht, der zu mehreren Eckpunkten den gleichen Abstand hat (z. B. den Umkreismittelpunkt).</p>
+                `
+            },
+            {
+                id: 21,
+                category: "mittelsenkrechte",
+                question: "Wie konstruierst du den Umkreis eines Dreiecks ABC?",
+                answer: `
+                    <h4>Umkreis</h4>
+                    <p><strong>Idee:</strong> Der Umkreismittelpunkt U hat den gleichen Abstand zu allen drei Eckpunkten — er liegt also auf <strong>allen drei Mittelsenkrechten</strong>.</p>
+                    <p><strong>Konstruktionsbeschreibung:</strong></p>
+                    <ol>
+                        <li>Konstruiere die Mittelsenkrechte von Seite a (zwischen B und C).</li>
+                        <li>Konstruiere die Mittelsenkrechte von Seite b (zwischen A und C).</li>
+                        <li>Schnittpunkt der beiden Mittelsenkrechten = Umkreismittelpunkt U.</li>
+                        <li>Schlage einen Kreis um U mit Radius |UA| → Umkreis.</li>
+                    </ol>
+                    <p><strong>Probe:</strong> Die dritte Mittelsenkrechte (von Seite c) geht ebenfalls durch U.</p>
+                `
+            },
+
+            // ===== Tab 8: Winkelhalbierende + Inkreis =====
+            {
+                id: 22,
+                category: "winkelhalbierende",
+                question: "Wie konstruierst du die Winkelhalbierende eines Winkels mit Scheitel S?",
+                answer: `
+                    <h4>Winkelhalbierende konstruieren</h4>
+                    <p><strong>Konstruktionsbeschreibung:</strong></p>
+                    <ol>
+                        <li>Schlage einen Kreis um S, der beide Schenkel schneidet → Schnittpunkte P und Q.</li>
+                        <li>Schlage einen Kreis um P mit beliebigem Radius r.</li>
+                        <li>Schlage einen Kreis um Q mit demselben Radius r.</li>
+                        <li>Die beiden Kreise schneiden sich in einem Punkt R (im Inneren des Winkels).</li>
+                        <li>Zeichne die Halbgerade von S durch R → Winkelhalbierende.</li>
+                    </ol>
+                `
+            },
+            {
+                id: 23,
+                category: "winkelhalbierende",
+                question: "Welche besondere Eigenschaft hat die Winkelhalbierende?",
+                answer: `
+                    <h4>Winkelhalbierende als Ortslinie</h4>
+                    <p><strong>Ortslinien-Eigenschaft:</strong> Jeder Punkt auf der Winkelhalbierenden hat den <strong>gleichen Abstand</strong> zu beiden Schenkeln des Winkels.</p>
+                    <p><strong>Folgerung:</strong> Die Winkelhalbierende ist die Ortslinie aller Punkte, die von beiden Schenkeln gleich weit entfernt sind.</p>
+                    <p><strong>Wichtig:</strong> "Abstand zu einem Schenkel" = Länge des <strong>Lotes</strong> vom Punkt auf den Schenkel (immer rechtwinklig messen).</p>
+                `
+            },
+            {
+                id: 24,
+                category: "winkelhalbierende",
+                question: "Wie konstruierst du den Inkreis eines Dreiecks ABC?",
+                answer: `
+                    <h4>Inkreis</h4>
+                    <p><strong>Idee:</strong> Der Inkreismittelpunkt I hat den gleichen Abstand zu allen drei Seiten — er liegt also auf <strong>allen drei Winkelhalbierenden</strong>.</p>
+                    <p><strong>Konstruktionsbeschreibung:</strong></p>
+                    <ol>
+                        <li>Konstruiere die Winkelhalbierende des Innenwinkels α (in A).</li>
+                        <li>Konstruiere die Winkelhalbierende des Innenwinkels β (in B).</li>
+                        <li>Schnittpunkt der beiden Winkelhalbierenden = Inkreismittelpunkt I.</li>
+                        <li>Fälle das Lot von I auf eine Seite (z. B. AB) → Lotfußpunkt L.</li>
+                        <li>Schlage einen Kreis um I mit Radius |IL| → Inkreis.</li>
+                    </ol>
+                    <p><strong>Probe:</strong> Die dritte Winkelhalbierende geht ebenfalls durch I.</p>
+                `
+            },
+        ];
+
+        let currentIndex = 0;
+        let filteredCards = [...cards];
+        let progress = {};
+        const STORAGE_KEY = 'ka3eck-progress-v2';
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                progress = JSON.parse(saved);
+            }
+            // Migration from old format
+            const oldSaved = localStorage.getItem('analysis-trainer-progress');
+            if (oldSaved && !saved) {
+                const oldProgress = JSON.parse(oldSaved);
+                for (const [cardId, status] of Object.entries(oldProgress)) {
+                    if (!progress[cardId]) {
+                        progress[cardId] = createNewCardProgress(parseInt(cardId));
+                        if (status === 'known') {
+                            progress[cardId].interval = 3;
+                            progress[cardId].repetitions = 1;
+                        }
+                    }
+                }
+                saveProgress();
+            }
+        }
+
+        // Create new card progress entry
+        function createNewCardProgress(cardId) {
+            return {
+                status: 'new',
+                lastReview: null,
+                nextReview: Date.now(),
+                interval: 1,
+                easeFactor: 2.5,
+                repetitions: 0,
+                correctStreak: 0
+            };
+        }
+
+        // SM-2 algorithm for spaced repetition
+        function updateCardProgress(cardId, quality) {
+            if (!progress[cardId]) {
+                progress[cardId] = createNewCardProgress(cardId);
+            }
+            const card = progress[cardId];
+
+            if (quality >= 3) {
+                card.repetitions++;
+                card.correctStreak++;
+                if (card.repetitions === 1) {
+                    card.interval = 1;
+                } else if (card.repetitions === 2) {
+                    card.interval = 3;
+                } else {
+                    card.interval = Math.round(card.interval * card.easeFactor);
+                }
+                card.status = card.repetitions >= 3 ? 'mastered' : 'learning';
+            } else {
+                card.repetitions = 0;
+                card.interval = 1;
+                card.correctStreak = 0;
+                card.status = 'learning';
+            }
+
+            // Adjust ease factor
+            card.easeFactor = Math.max(1.3,
+                card.easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+            );
+
+            card.lastReview = Date.now();
+            card.nextReview = Date.now() + card.interval * 24 * 60 * 60 * 1000;
+
+            saveProgress();
+            return card.interval;
+        }
+
+        // Format interval for display
+        function formatInterval(days) {
+            if (days < 1) return 'heute';
+            if (days === 1) return 'morgen';
+            if (days < 7) return `in ${days} Tagen`;
+            if (days < 30) return `in ${Math.round(days / 7)} Wochen`;
+            return `in ${Math.round(days / 30)} Monaten`;
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        }
+
+        // Render KaTeX
+        function renderMath() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ],
+                throwOnError: false
+            });
+        }
+
+        // Display current card
+        function displayCard() {
+            if (filteredCards.length === 0) {
+                document.getElementById('cardQuestion').textContent = 'Keine Karten in dieser Kategorie.';
+                document.getElementById('cardAnswer').innerHTML = '';
+                document.getElementById('cardCategory').textContent = '';
+                document.getElementById('cardCategoryBack').textContent = '';
+                return;
+            }
+
+            const card = filteredCards[currentIndex];
+            document.getElementById('cardQuestion').innerHTML = card.question;
+            document.getElementById('cardAnswer').innerHTML = card.answer;
+            document.getElementById('cardCategory').textContent = card.category.toUpperCase();
+            document.getElementById('cardCategoryBack').textContent = card.category.toUpperCase();
+
+            // Reset card flip
+            document.getElementById('flashcard').classList.remove('flipped');
+            document.getElementById('flipBtn').textContent = 'Aufdecken';
+            document.getElementById('ratingButtons').classList.remove('visible');
+
+            updateCounter();
+            updateStats();
+            renderMath();
+        }
+
+        // Flip card
+        function flipCard() {
+            const card = document.getElementById('flashcard');
+            const btn = document.getElementById('flipBtn');
+            const rating = document.getElementById('ratingButtons');
+
+            card.classList.toggle('flipped');
+
+            if (card.classList.contains('flipped')) {
+                btn.textContent = 'Zurück zur Frage';
+                rating.classList.add('visible');
+            } else {
+                btn.textContent = 'Aufdecken';
+                rating.classList.remove('visible');
+            }
+        }
+
+        // Navigate cards with debouncing
+        let isNavigating = false;
+
+        function nextCard() {
+            if (isNavigating || currentIndex >= filteredCards.length - 1) return;
+            isNavigating = true;
+            currentIndex++;
+            displayCard();
+            setTimeout(() => isNavigating = false, 400);
+        }
+
+        function prevCard() {
+            if (isNavigating || currentIndex <= 0) return;
+            isNavigating = true;
+            currentIndex--;
+            displayCard();
+            setTimeout(() => isNavigating = false, 400);
+        }
+
+        // Rate card with spaced repetition
+        function rateCard(quality) {
+            const card = filteredCards[currentIndex];
+            const interval = updateCardProgress(card.id, quality);
+
+            // Show next review info and hide rating buttons
+            document.getElementById('nextReview').textContent =
+                `Nächste Wiederholung: ${formatInterval(interval)}`;
+            document.getElementById('ratingButtons').classList.remove('visible');
+
+            updateStats();
+            updateProgressBar();
+
+            // Auto-advance to next card
+            if (currentIndex < filteredCards.length - 1) {
+                setTimeout(() => nextCard(), 500);
+            }
+        }
+
+        // Legacy function for compatibility
+        function markCard(known) {
+            rateCard(known ? 4 : 1);
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.category === category);
+            });
+
+            if (category === 'all') {
+                filteredCards = [...cards];
+            } else {
+                filteredCards = cards.filter(c => c.category === category);
+            }
+
+            currentIndex = 0;
+            displayCard();
+            updateProgressBar();
+        }
+
+        // Shuffle cards
+        function shuffleCards() {
+            for (let i = filteredCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [filteredCards[i], filteredCards[j]] = [filteredCards[j], filteredCards[i]];
+            }
+            currentIndex = 0;
+            displayCard();
+        }
+
+        // Reset progress
+        function resetProgress() {
+            if (confirm('Willst du wirklich den gesamten Fortschritt zurücksetzen?')) {
+                progress = {};
+                saveProgress();
+                updateStats();
+                updateProgressBar();
+            }
+        }
+
+        // Update counter display
+        function updateCounter() {
+            document.getElementById('cardCounter').textContent =
+                `Karte ${currentIndex + 1} von ${filteredCards.length}`;
+
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === filteredCards.length - 1;
+        }
+
+        // Update statistics
+        function updateStats() {
+            let mastered = 0;
+            let learning = 0;
+            let newCards = 0;
+
+            for (const card of cards) {
+                const p = progress[card.id];
+                if (!p || p.status === 'new') {
+                    newCards++;
+                } else if (p.status === 'mastered' || p.repetitions >= 3) {
+                    mastered++;
+                } else {
+                    learning++;
+                }
+            }
+
+            document.getElementById('knownCount').textContent = mastered;
+            document.getElementById('unknownCount').textContent = learning;
+            document.getElementById('remainingCount').textContent = newCards;
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const total = filteredCards.length;
+            const mastered = filteredCards.filter(c => {
+                const p = progress[c.id];
+                return p && (p.status === 'mastered' || p.repetitions >= 3);
+            }).length;
+            const percent = total > 0 ? Math.round((mastered / total) * 100) : 0;
+
+            const fill = document.getElementById('progressFill');
+            fill.style.width = percent + '%';
+            fill.textContent = percent + '%';
+        }
+
+        // Event listeners
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => filterByCategory(tab.dataset.category));
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextCard();
+            if (e.key === 'ArrowLeft') prevCard();
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                flipCard();
+            }
+            if (e.key === '1') markCard(false);
+            if (e.key === '2') markCard(true);
+        });
+
+        // Initialize
+        loadProgress();
+        displayCard();
+        updateProgressBar();
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "dreieck-6",
+  "version": "1.0.0",
+  "description": "Karteikarten-Trainer zur Vorbereitung auf die Klassenarbeit Mai 2026.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}
